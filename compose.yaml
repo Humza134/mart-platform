@@ -49,6 +49,32 @@ services:
         - broker
     ports:
       - "8006:8000"  # Expose container port 8000 to host port 8000  
+
+  user_service:
+    image: user-mart-api
+    build:
+      context: ./user_service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./user_service:/code  # Sync local development directory with the container
+    depends_on:
+        - postgres_user_db
+        - broker
+    ports:
+      - "8007:8000"  # Expose container port 8000 to host port 8000  
+
+  order_service:
+    image: order-mart-api
+    build:
+      context: ./order_service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./order_service:/code  # Sync local development directory with the container
+    depends_on:
+        - postgres_order_db
+        - broker
+    ports:
+      - "8008:8000"  # Expose container port 8000 to host port 8000  
  
 
   postgres_db:
@@ -90,6 +116,32 @@ services:
     volumes:
         - postgres_inventory_db:/var/lib/postgresql/data
 
+  postgres_user_db:
+    image: postgres:latest  # Use the official PostgreSQL image
+    restart: always
+    container_name: PostgresUserCont
+    environment:
+      - POSTGRES_USER=hamza
+      - POSTGRES_PASSWORD=my_password
+      - POSTGRES_DB=mydatabase
+    ports:
+        - '5483:5432'
+    volumes:
+        - postgres_user_db:/var/lib/postgresql/data
+
+  postgres_order_db:
+    image: postgres:latest  # Use the official PostgreSQL image
+    restart: always
+    container_name: PostgresOrderCont
+    environment:
+      - POSTGRES_USER=hamza
+      - POSTGRES_PASSWORD=my_password
+      - POSTGRES_DB=mydatabase
+    ports:
+        - '5484:5432'
+    volumes:
+        - postgres_order_db:/var/lib/postgresql/data
+
   broker:
     image: apache/kafka:3.7.0
     hostname: broker
@@ -130,6 +182,10 @@ volumes:
   postgres_product_db:
     driver: local
   postgres_inventory_db:
+    driver: local
+  postgres_user_db:
+    driver: local
+  postgres_order_db:
     driver: local
 
 networks:

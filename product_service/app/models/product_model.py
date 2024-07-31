@@ -20,6 +20,7 @@ class ProductBase(SQLModel):
 class Product(ProductBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     # category: Dict = Field(sa_column=Column(JSON))
+    # owner_id: int | None = Field(default=None)
 
 class ProductCreate(ProductBase):
     pass
